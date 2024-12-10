@@ -1,0 +1,33 @@
+@kernel void addVectors(const int entries,
+                        const float *a,
+                        const float *b,
+                        float *ab) {
+  for (int tile = 0; tile < entries; tile += 4; @outer) {
+    for (int i = tile; i < (tile + 4); ++i; @inner) {
+      if (i < entries) {
+        ab[i] = a[i] + b[i];
+      }
+    }
+  }
+}
+
+void inner_addVectors(const int entries,
+		      const int tile,
+                      const float *a,
+                      const float *b,
+                      float *ab) {
+  for (int i = tile; i < (tile + 4); ++i; @inner) {
+    if (i < entries) {
+      ab[i] = a[i] + b[i];
+    }
+  }
+}
+
+@kernel void addVectorsFunction(const int entries,
+                        	const float *a,
+ 	                        const float *b,
+         	                float *ab) {
+  for (int tile = 0; tile < entries; tile += 4; @outer) {
+    inner_addVectors(entries,tile,a,b,ab);
+  }
+}
